@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h>
+#include <time.h>
 
+// Function to encrypt a string using a Caesar cipher
 void encrypt(int key, char* tt) {
     char ch;
     for (int i = 0; tt[i] != '\0'; ++i) {
@@ -26,6 +29,7 @@ void encrypt(int key, char* tt) {
     }
 }
 
+// Function to decrypt a string using a Caesar cipher
 void decrypt(int key, char* tt) {
     char ch;
     for (int i = 0; tt[i] != '\0'; ++i) {
@@ -52,18 +56,21 @@ void decrypt(int key, char* tt) {
 }
 
 int main() {
-    char text[500];
+    char original_text[500];
+    char encrypted_text[500];
     int key;
+    clock_t start_time, end_time;
+    double cpu_time_used;
 
-    printf("Enter a message to encrypt: ");
-    if (fgets(text, sizeof(text), stdin) == NULL) {
+    printf("Enter a message: ");
+    if (fgets(original_text, sizeof(original_text), stdin) == NULL) {
         printf("Error reading input.\n");
         return 1;
     }
 
-    for (int i = 0; text[i] != '\0'; ++i) {
-        if (text[i] == '\n') {
-            text[i] = '\0';
+    for (int i = 0; original_text[i] != '\0'; ++i) {
+        if (original_text[i] == '\n') {
+            original_text[i] = '\0';
             break;
         }
     }
@@ -71,13 +78,28 @@ int main() {
     printf("Enter the key: ");
     scanf("%d", &key);
 
-    printf("\nOriginal Message: %s\n", text);
+    printf("\nOriginal Message: %s\n", original_text);
 
-    encrypt(key, text);
-    printf("Encrypted Message: %s\n", text);
+    // Copy original_text to encrypted_text for modification
+    strcpy(encrypted_text, original_text);
 
-    decrypt(key, text);
-    printf("Decrypted Message: %s\n", text);
+    // Measure encryption time
+    start_time = clock();
+    encrypt(key, encrypted_text);
+    end_time = clock();
+    cpu_time_used = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+
+    printf("Encrypted Message: %s\n", encrypted_text);
+    printf("Encryption time: %f seconds\n", cpu_time_used);
+
+    // Measure decryption time
+    start_time = clock();
+    decrypt(key, encrypted_text);
+    end_time = clock();
+    cpu_time_used = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+
+    printf("Decrypted Message: %s\n", encrypted_text);
+    printf("Decryption time: %f seconds\n", cpu_time_used);
 
     return 0;
 }

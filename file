@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <ctype.h>
+
+void encrypt_file(const char* input_filename, const char* output_filename, int shift); // Function declaration
+
+void decrypt_file(const char* input_filename, const char* output_filename, int shift) {
+    // Decryption is the same as encryption with a negative shift.
+    int decrypt_shift = (26 - (shift % 26)) % 26;
+    encrypt_file(input_filename, output_filename, decrypt_shift);
+    printf("Decryption complete. Output written to %s\n", output_filename);
+}
+
+int main() {
+    // First, encrypt a file
+    encrypt_file("plaintext.txt", "encrypted.txt", 3);
+    
+    // Then, decrypt it back
+    decrypt_file("encrypted.txt", "decrypted.txt", 3);
+    
+    return 0;
+}
+
+// Function definition (same as in the encryption section)
+void encrypt_file(const char* input_filename, const char* output_filename, int shift) {
+    FILE* input_file = fopen(input_filename, "r");
+    if (input_file == NULL) {
+        printf("Error: Could not open input file %s\n", input_filename);
+        return;
+    }
+
+    FILE* output_file = fopen(output_filename, "w");
+    if (output_file == NULL) {
+        printf("Error: Could not create output file %s\n", output_filename);
+        fclose(input_file);
+        return;
+    }
+
+    int c;
+    while ((c = fgetc(input_file)) != EOF) {
+        if (islower(c)) {
+            fputc(((c - 'a' + shift) % 26) + 'a', output_file);
+        } else if (isupper(c)) {
+            fputc(((c - 'A' + shift) % 26) + 'A', output_file);
+        } else {
+            fputc(c, output_file);
+        }
+    }
+
+    fclose(input_file);
+    fclose(output_file);
+}

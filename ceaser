@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <ctype.h>
+
+void encrypt(int key, char* tt) {
+    char ch;
+    for (int i = 0; tt[i] != '\0'; ++i) {
+        ch = tt[i];
+
+        if (isalpha(ch)) {
+            key = key % 26;
+            if (islower(ch)) {
+                ch = (ch - 'a' + key + 26) % 26 + 'a';
+            } else {
+                ch = (ch - 'A' + key + 26) % 26 + 'A';
+            }
+        } else if (isdigit(ch)) {
+            key = key % 10;
+            ch = (ch - '0' + key + 10) % 10 + '0';
+        } else {
+            if (ch >= 32 && ch <= 126) {
+                key = key % 95;
+                ch = (ch - 32 + key + 95) % 95 + 32;
+            }
+        }
+        tt[i] = ch;
+    }
+}
+
+void decrypt(int key, char* tt) {
+    char ch;
+    for (int i = 0; tt[i] != '\0'; ++i) {
+        ch = tt[i];
+
+        if (isalpha(ch)) {
+            key = key % 26;
+            if (islower(ch)) {
+                ch = (ch - 'a' - key + 26) % 26 + 'a';
+            } else {
+                ch = (ch - 'A' - key + 26) % 26 + 'A';
+            }
+        } else if (isdigit(ch)) {
+            key = key % 10;
+            ch = (ch - '0' - key + 10) % 10 + '0';
+        } else {
+            if (ch >= 32 && ch <= 126) {
+                key = key % 95;
+                ch = (ch - 32 - key + 95) % 95 + 32;
+            }
+        }
+        tt[i] = ch;
+    }
+}
+
+int main() {
+    char text[500];
+    int key;
+
+    printf("Enter a message to encrypt: ");
+    if (fgets(text, sizeof(text), stdin) == NULL) {
+        printf("Error reading input.\n");
+        return 1;
+    }
+
+    for (int i = 0; text[i] != '\0'; ++i) {
+        if (text[i] == '\n') {
+            text[i] = '\0';
+            break;
+        }
+    }
+
+    printf("Enter the key: ");
+    scanf("%d", &key);
+
+    printf("\nOriginal Message: %s\n", text);
+
+    encrypt(key, text);
+    printf("Encrypted Message: %s\n", text);
+
+    decrypt(key, text);
+    printf("Decrypted Message: %s\n", text);
+
+    return 0;
+}
